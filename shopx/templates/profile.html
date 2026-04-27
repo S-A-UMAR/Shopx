@@ -14,6 +14,7 @@
         </div>
 
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <h3 style="margin-bottom: 1rem; color: var(--accent);">Shipping Defaults</h3>
             <div class="form-group">
                 <label for="phone">Phone Number</label>

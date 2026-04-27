@@ -1,0 +1,1 @@
+# ShopX package initializer
