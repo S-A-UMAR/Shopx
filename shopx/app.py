@@ -7,7 +7,8 @@ import resend
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shopx_super_secret_key_123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shopx.db'
+# TiDB Cloud Connection String
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://2jDJxDFphxNiy1x.root:Drb0ljTi0tX4wOzF@gateway01.eu-central-1.prod.aws.tidbcloud.com:4000/Shopx?ssl_verify_cert=true'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
