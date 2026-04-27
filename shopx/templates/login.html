@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="form-container glass">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Welcome Back</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="padding: 1rem; border-radius: 8px; margin-bottom: 1rem; background: rgba(255,255,255,0.1); color: var(--accent);">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" placeholder="email@example.com" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="cta-button" style="width: 100%; border: none; cursor: pointer; margin-top: 1rem;">Login</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+        Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--accent);">Sign Up</a>
+    </p>
+</div>
+{% endblock %}

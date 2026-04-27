@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Our Collection{% endblock %}
+
+{% block content %}
+<div style="padding-top: 120px;">
+    <h1 class="section-title">The Collection</h1>
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Premium footwear designed for the modern trailblazer.</p>
+    
+    <div class="product-grid">
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_hero.png') }}" alt="Quantum Glide" class="product-image">
+            <div class="product-info">
+                <h3>Quantum Glide</h3>
+                <p class="price">₦375,000</p>
+                <button class="add-to-cart" onclick="addToCart(1, 'Quantum Glide', 375000, '{{ url_for('static', filename='img/shoe_hero.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_orange.png') }}" alt="Solar Flare" class="product-image">
+            <div class="product-info">
+                <h3>Solar Flare</h3>
+                <p class="price">₦285,000</p>
+                <button class="add-to-cart" onclick="addToCart(2, 'Solar Flare', 285000, '{{ url_for('static', filename='img/shoe_orange.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_purple.png') }}" alt="Nebula High" class="product-image">
+            <div class="product-info">
+                <h3>Nebula High</h3>
+                <p class="price">₦330,000</p>
+                <button class="add-to-cart" onclick="addToCart(3, 'Nebula High', 330000, '{{ url_for('static', filename='img/shoe_purple.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_orange.png') }}" alt="Ember Run" class="product-image" style="filter: hue-rotate(45deg);">
+            <div class="product-info">
+                <h3>Ember Run</h3>
+                <p class="price">₦260,000</p>
+                <button class="add-to-cart" onclick="addToCart(4, 'Ember Run', 260000, '{{ url_for('static', filename='img/shoe_orange.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_hero.png') }}" alt="Void Walker" class="product-image" style="filter: grayscale(1);">
+            <div class="product-info">
+                <h3>Void Walker</h3>
+                <p class="price">₦315,000</p>
+                <button class="add-to-cart" onclick="addToCart(5, 'Void Walker', 315000, '{{ url_for('static', filename='img/shoe_hero.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_purple.png') }}" alt="Amethyst Peak" class="product-image" style="filter: brightness(0.8);">
+            <div class="product-info">
+                <h3>Amethyst Peak</h3>
+                <p class="price">₦350,000</p>
+                <button class="add-to-cart" onclick="addToCart(6, 'Amethyst Peak', 350000, '{{ url_for('static', filename='img/shoe_purple.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Elevate Your Every Step{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="animate-text">Quantum<br><span style="color: var(--accent)">Series 01</span></h1>
+        <p>Engineered for speed, designed for the future. Experience the ultimate fusion of performance and luxury.</p>
+        <a href="{{ url_for('products') }}" class="cta-button">Explore Collection</a>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='img/shoe_hero.png') }}" alt="Quantum Sneaker">
+    </div>
+</section>
+
+<section class="featured-products">
+    <h2 class="section-title">New Arrivals</h2>
+    <div class="product-grid">
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_orange.png') }}" alt="Solar Flare" class="product-image">
+            <div class="product-info">
+                <h3>Solar Flare</h3>
+                <p class="price">₦285,000</p>
+                <button class="add-to-cart" onclick="addToCart(2, 'Solar Flare', 285000, '{{ url_for('static', filename='img/shoe_orange.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_purple.png') }}" alt="Nebula High" class="product-image">
+            <div class="product-info">
+                <h3>Nebula High</h3>
+                <p class="price">₦330,000</p>
+                <button class="add-to-cart" onclick="addToCart(3, 'Nebula High', 330000, '{{ url_for('static', filename='img/shoe_purple.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+        <div class="product-card glass">
+            <img src="{{ url_for('static', filename='img/shoe_hero.png') }}" alt="Quantum Glide" class="product-image">
+            <div class="product-info">
+                <h3>Quantum Glide</h3>
+                <p class="price">₦375,000</p>
+                <button class="add-to-cart" onclick="addToCart(1, 'Quantum Glide', 375000, '{{ url_for('static', filename='img/shoe_hero.png') }}')">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
