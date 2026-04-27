@@ -1,5 +1,6 @@
 // ShopX Cart Logic
 let cart = JSON.parse(localStorage.getItem('shopx_cart')) || [];
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
 function updateCartCount() {
     const countElement = document.getElementById('cart-count');
@@ -102,13 +103,16 @@ function payWithPaystack() {
     // Optional: Save shipping details to backend via fetch before opening Paystack
     fetch('/checkout_details', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken || ''
+        },
         body: `phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(address)}&city=${encodeURIComponent(city)}`
     });
 
     let handler = PaystackPop.setup({
-        key: 'pk_live_2734df5e5115659a8cc452acdcbd0aba42fd545c', // Live Public Key
-        email: 'umarsa8080@gmail.com', // Merchant email
+        key: window.SHOPX_PAYSTACK_KEY,
+        email: window.SHOPX_MERCHANT_EMAIL,
         amount: total * 100, // Amount is in Kobo
         currency: 'NGN',
         metadata: {
