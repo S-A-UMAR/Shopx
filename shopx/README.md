@@ -43,31 +43,52 @@ shopx/
 
 ## 🏃 How to Run
 
+> Run commands from the repository root (`/workspace/Shopx`) unless noted.
+
 1. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Configure Environment Variables** (copy `.env.example`):
+2. **Configure Environment Variables**:
    ```bash
-   cp .env.example .env
+   cp shopx/.env.example .env
    ```
 
-   At minimum, set `SECRET_KEY`. For local development, default SQLite works if `DATABASE_URL` is left as-is.
+   Required env vars for TiDB + app (exact names):
+   - `SECRET_KEY`
+   - `DB_HOST`
+   - `DB_USER`
+   - `DB_PASSWORD`
+   - `DB_NAME`
+   - `DB_PORT`
 
-3. **Start the Application**:
+   You can alternatively set a single `DATABASE_URL`.
+
+3. **Initialize migrations + create tables in TiDB**:
+   ```bash
+   flask --app shopx.app db init
+   flask --app shopx.app db migrate -m "init"
+   flask --app shopx.app db upgrade
+   ```
+
+4. **Start the Application (local)**:
    ```bash
    python app.py
    ```
 
-4. **Access the Website**:
-   Open your browser and navigate to `http://127.0.0.1:5000`
+5. **Access the Website**:
+   Open `http://127.0.0.1:5000`
+
+### Vercel notes
+- This repo now includes a root `vercel.json` that routes all requests to `api/index.py`, which serves the Flask app.
+- Add all required environment variables in **Vercel → Project Settings → Environment Variables** before deploying.
 
 ## 📝 Implementation Details
 
 - **Cart Logic**: The shopping cart is handled on the client-side to ensure maximum performance and responsiveness. Data is stored in the browser's `localStorage`.
 - **Styling**: The design uses a custom CSS variable system for easy theming (Dark mode by default).
-- **Security**: Flask is configured in Debug mode for development, providing detailed error messages and hot-reloading.
+- **Security**: CSRF protection is enabled and runtime configuration is controlled via environment variables.
 
 ---
 *Created by ShopX Development Team - 2026*

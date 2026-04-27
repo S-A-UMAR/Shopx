@@ -98,6 +98,11 @@ function payWithPaystack() {
         return;
     }
 
+    if (!window.SHOPX_PAYSTACK_KEY || !window.SHOPX_MERCHANT_EMAIL) {
+        showNotification("Payment is not configured yet. Contact support.");
+        return;
+    }
+
     let total = cart.reduce((sum, item) => sum + item.price, 0);
     
     // Optional: Save shipping details to backend via fetch before opening Paystack

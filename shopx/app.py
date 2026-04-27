@@ -1,17 +1,41 @@
 import os
+from urllib.parse import quote_plus
+
+from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
+from flask_migrate import Migrate
 import resend
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # App configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-change-me')
 
-database_uri = os.getenv('DATABASE_URL', 'sqlite:///shopx.db')
+# Primary option: single DATABASE_URL
+# Fallback option: TiDB split variables (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT)
+database_uri = os.getenv('DATABASE_URL')
+if not database_uri:
+    db_host = os.getenv('DB_HOST')
+    db_user = os.getenv('DB_USER')
+    db_password = os.getenv('DB_PASSWORD')
+    db_name = os.getenv('DB_NAME')
+    db_port = os.getenv('DB_PORT', '4000')
+
+    if all([db_host, db_user, db_password, db_name]):
+        database_uri = (
+            f"mysql+pymysql://{quote_plus(db_user)}:{quote_plus(db_password)}"
+            f"@{db_host}:{db_port}/{db_name}?ssl_verify_cert=true&ssl_verify_identity=true"
+        )
+
+if not database_uri:
+    database_uri = 'sqlite:///shopx.db'
+
 if database_uri.startswith('postgres://'):
     database_uri = database_uri.replace('postgres://', 'postgresql://', 1)
 
@@ -22,6 +46,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 csrf = CSRFProtect(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -29,8 +54,8 @@ resend_api_key = os.getenv('RESEND_API_KEY')
 if resend_api_key:
     resend.api_key = resend_api_key
 
-paystack_public_key = os.getenv('PAYSTACK_PUBLIC_KEY', 'pk_test_xxx_replace_me')
-paystack_merchant_email = os.getenv('PAYSTACK_MERCHANT_EMAIL', 'merchant@example.com')
+paystack_public_key = os.getenv('PAYSTACK_PUBLIC_KEY', '')
+paystack_merchant_email = os.getenv('PAYSTACK_MERCHANT_EMAIL', '')
 
 
 @app.context_processor
@@ -177,13 +202,9 @@ def checkout_details():
     return {'status': 'success'}
 
 
-# Initialize Database
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f'Database initialization failed: {e}')
-
-
 if __name__ == '__main__':
-    app.run(debug=os.getenv('FLASK_DEBUG', '').lower() == 'true')
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', '5000')),
+        debug=os.getenv('FLASK_DEBUG', '').lower() == 'true',
+    )
