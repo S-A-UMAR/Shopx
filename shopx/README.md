@@ -45,15 +45,22 @@ shopx/
 
 1. **Install Dependencies**:
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
 
-2. **Start the Application**:
+2. **Configure Environment Variables** (copy `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+
+   At minimum, set `SECRET_KEY`. For local development, default SQLite works if `DATABASE_URL` is left as-is.
+
+3. **Start the Application**:
    ```bash
    python app.py
    ```
 
-3. **Access the Website**:
+4. **Access the Website**:
    Open your browser and navigate to `http://127.0.0.1:5000`
 
 ## 📝 Implementation Details

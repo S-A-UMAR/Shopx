@@ -2,6 +2,7 @@ flask
 flask-sqlalchemy
 flask-login
 flask-bcrypt
+flask-wtf
 bcrypt
 resend
 pymysql
