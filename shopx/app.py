@@ -1,6 +1,5 @@
 import os
 from urllib.parse import quote_plus
-
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -14,12 +13,12 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# App configuration
+# --- App Configuration ---
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-change-me')
 
-# Primary option: single DATABASE_URL
-# Fallback option: TiDB split variables (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT)
 database_uri = os.getenv('DATABASE_URL')
+engine_options = {}
+
 if not database_uri:
     db_host = os.getenv('DB_HOST')
     db_user = os.getenv('DB_USER')
@@ -28,21 +27,29 @@ if not database_uri:
     db_port = os.getenv('DB_PORT', '4000')
 
     if all([db_host, db_user, db_password, db_name]):
-        database_uri = (
-            f"mysql+pymysql://{quote_plus(db_user)}:{quote_plus(db_password)}"
-            f"@{db_host}:{db_port}/{db_name}?ssl_verify_cert=true&ssl_verify_identity=true"
-        )
+        database_uri = f"mysql+pymysql://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_name}"
+        # SSL fix for TiDB connection errors on macOS/Vercel
+        engine_options = {
+            "connect_args": {
+                "ssl": {
+                    "check_hostname": False,
+                    "verify_mode": 0
+                }
+            }
+        }
 
 if not database_uri:
     database_uri = 'sqlite:///shopx.db'
 
+# Fix for older Heroku/Render Postgres strings
 if database_uri.startswith('postgres://'):
     database_uri = database_uri.replace('postgres://', 'postgresql://', 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = engine_options
 
-# Extensions
+# --- Extensions (Initialize ONCE only) ---
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 csrf = CSRFProtect(app)
@@ -50,13 +57,13 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# API Configs
 resend_api_key = os.getenv('RESEND_API_KEY')
 if resend_api_key:
     resend.api_key = resend_api_key
 
 paystack_public_key = os.getenv('PAYSTACK_PUBLIC_KEY', '')
 paystack_merchant_email = os.getenv('PAYSTACK_MERCHANT_EMAIL', '')
-
 
 @app.context_processor
 def inject_public_config():
@@ -65,8 +72,7 @@ def inject_public_config():
         'PAYSTACK_MERCHANT_EMAIL': paystack_merchant_email,
     }
 
-
-# Database Models
+# --- Database Models ---
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -75,37 +81,30 @@ class User(db.Model, UserMixin):
     address = db.Column(db.String(500), nullable=True)
     city = db.Column(db.String(100), nullable=True)
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-
-# Routes
+# --- Routes ---
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
-
 
 @app.route('/products')
 def products():
     return render_template('products.html')
 
-
 @app.route('/cart')
 def cart():
     return render_template('cart.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -137,14 +136,12 @@ def register():
 
         if resend_api_key:
             try:
-                resend.Emails.send(
-                    {
-                        'from': 'onboarding@resend.dev',
-                        'to': email,
-                        'subject': 'Welcome to ShopX!',
-                        'html': f'<strong>Welcome to the ShopX family!</strong><p>Your account for {email} has been created successfully.</p>',
-                    }
-                )
+                resend.Emails.send({
+                    'from': 'onboarding@resend.dev',
+                    'to': email,
+                    'subject': 'Welcome to ShopX!',
+                    'html': f'<strong>Welcome!</strong><p>Your account for {email} has been created.</p>',
+                })
             except Exception as e:
                 print(f'Error sending email: {e}')
 
@@ -152,7 +149,6 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -172,7 +168,6 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -184,13 +179,11 @@ def profile():
         flash('Profile updated!', 'success')
     return render_template('profile.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 @app.route('/checkout_details', methods=['POST'])
 @login_required
@@ -201,7 +194,5 @@ def checkout_details():
     db.session.commit()
     return {'status': 'success'}
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-    
