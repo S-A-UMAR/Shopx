@@ -1,9 +1,0 @@
-flask
-flask-sqlalchemy
-flask-login
-flask-bcrypt
-flask-wtf
-flask-migrate
-pymysql
-resend
-python-dotenv
